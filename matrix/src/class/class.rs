@@ -1,6 +1,7 @@
 use super::methods::adjugate::adjugate;
 use super::methods::determinant::determinant;
 use super::methods::inverse::inverse;
+use super::methods::multiplication::multiply;
 use super::methods::transpose::transpose;
 
 #[derive(Debug, Clone)]
@@ -83,6 +84,16 @@ impl Matrix {
             size_x: self.size_y,
             size_y: self.size_x,
             data: inverse_data,
+        }
+    }
+    // multiplication of matrix
+    pub fn multiplication(&self, data: Matrix) -> Matrix {
+        let multi = multiply(&self.data, &data.data);
+        let len = multi.len();
+        Matrix {
+            size_x: len,
+            size_y: if len > 0 { multi[0].len() } else { 0 },
+            data: multi,
         }
     }
 
