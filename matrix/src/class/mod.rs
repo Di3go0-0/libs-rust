@@ -1,2 +1,2 @@
-pub mod class;
+pub mod matrix;
 pub mod methods;
