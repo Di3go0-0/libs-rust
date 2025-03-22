@@ -17,6 +17,6 @@ fn main() {
 
     println!("Matrix:\n{}", matrix);
 
-    let data = matrix.get(0, 1);
-    println!("Matrix:\n{:?}", matrix);
+    let det = matrix.determinant();
+    println!("Det: {}", det);
 }

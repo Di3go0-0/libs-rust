@@ -1,4 +1,7 @@
 use super::methods::determinant;
+use super::methods::determinant::determinant;
+use super::methods::transpose;
+use super::methods::transpose::transpose;
 
 #[derive(Debug, Clone)]
 pub struct Matrix {
@@ -38,8 +41,13 @@ impl Matrix {
 
     // Obtain a determinant of matrix
     pub fn determinant(&self) -> f64 {
-        let det: f64 = determinant::determinant(&self.data); // Esto está bien porque self.data ya es Vec<Vec<f64>>
+        let det: f64 = determinant(&self.data); // Esto está bien porque self.data ya es Vec<Vec<f64>>
         det
+    }
+
+    // Obtain a traspose of matrix
+    pub fn transpose(&self) -> Vec<Vec<f64>> {
+        transpose(&self.data)
     }
 }
 
