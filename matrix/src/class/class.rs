@@ -1,6 +1,6 @@
-use super::methods::determinant;
+use super::methods::adjugate::adjugate;
 use super::methods::determinant::determinant;
-use super::methods::transpose;
+use super::methods::inverse::inverse;
 use super::methods::transpose::transpose;
 
 #[derive(Debug, Clone)]
@@ -46,8 +46,39 @@ impl Matrix {
     }
 
     // Obtain a traspose of matrix
-    pub fn transpose(&self) -> Vec<Vec<f64>> {
-        transpose(&self.data)
+    pub fn transpose(&self) -> Matrix {
+        let trans_data = transpose(&self.data);
+        Matrix {
+            size_x: self.size_y,
+            size_y: self.size_x,
+            data: trans_data,
+        }
+    }
+
+    // Obtain adjugate of matrix
+    pub fn adjugte(&self) -> Matrix {
+        let adju_data = adjugate(&self.data);
+        Matrix {
+            size_x: self.size_y,
+            size_y: self.size_x,
+            data: adju_data,
+        }
+    }
+    // Obtain adjugate of matrix
+    pub fn inverse(&self) -> Matrix {
+        let inverse_data = inverse(&self.data);
+        Matrix {
+            size_x: self.size_y,
+            size_y: self.size_x,
+            data: inverse_data,
+        }
+    }
+
+    pub fn is_square(&self) -> bool {
+        if self.size_x == self.size_y {
+            return true;
+        }
+        false
     }
 }
 
