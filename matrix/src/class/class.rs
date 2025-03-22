@@ -20,6 +20,18 @@ impl Matrix {
         }
     }
 
+    // set vector like a row
+    pub fn set_row(&mut self, row: usize, values: Vec<f64>) -> Result<(), &'static str> {
+        if row >= self.size_x {
+            return Err("Out of range");
+        }
+        if values.len() != self.size_y {
+            return Err("Different Column sizes");
+        }
+        self.data[row] = values;
+        Ok(())
+    }
+
     // Get specific value donde x es fila, y es columna
     pub fn get(&self, x: usize, y: usize) -> Option<f64> {
         if x < self.size_x && y < self.size_y {
