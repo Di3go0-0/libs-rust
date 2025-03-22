@@ -2,6 +2,7 @@ use super::methods::adjugate::adjugate;
 use super::methods::determinant::determinant;
 use super::methods::inverse::inverse;
 use super::methods::multiplication::multiply;
+use super::methods::pseudoinverse::pseudo_inverse;
 use super::methods::transpose::transpose;
 
 #[derive(Debug, Clone)]
@@ -79,11 +80,23 @@ impl Matrix {
     }
     // Obtain adjugate of matrix
     pub fn inverse(&self) -> Matrix {
-        let inverse_data = inverse(&self.data);
-        Matrix {
-            size_x: self.size_y,
-            size_y: self.size_x,
-            data: inverse_data,
+        let mut inverse_data: Vec<Vec<f64>>;
+        if self.is_square() {
+            // Si la matriz es cuadrada, simplemente devolvemos su inversa
+            inverse_data = inverse(&self.data);
+            Matrix {
+                size_x: self.size_y,
+                size_y: self.size_x,
+                data: inverse_data,
+            }
+        } else {
+            inverse_data = pseudo_inverse(&self.data);
+            let len = inverse_data.len();
+            Matrix {
+                size_x: len,
+                size_y: if len > 0 { inverse_data[0].len() } else { 0 },
+                data: inverse_data,
+            }
         }
     }
     // multiplication of matrix
