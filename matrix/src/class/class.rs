@@ -80,7 +80,7 @@ impl Matrix {
     }
     // Obtain adjugate of matrix
     pub fn inverse(&self) -> Matrix {
-        let mut inverse_data: Vec<Vec<f64>>;
+        let inverse_data: Vec<Vec<f64>>;
         if self.is_square() {
             // Si la matriz es cuadrada, simplemente devolvemos su inversa
             inverse_data = inverse(&self.data);
@@ -134,5 +134,21 @@ impl std::fmt::Display for Matrix {
             writeln!(f, "]")?;
         }
         Ok(())
+    }
+}
+
+// Implementation indexation to use matrix[i][j]
+impl std::ops::Index<usize> for Matrix {
+    type Output = Vec<f64>;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.data[index]
+    }
+}
+
+// Implementation indexation to reemplace in Matric[i][j] = value
+impl std::ops::IndexMut<usize> for Matrix {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.data[index]
     }
 }
