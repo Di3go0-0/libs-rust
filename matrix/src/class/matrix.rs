@@ -1,29 +1,106 @@
+use num_traits::{Float, Num, One, Zero};
+
 use super::methods::adjugate::adjugate;
 use super::methods::determinant::determinant;
 use super::methods::inverse::inverse;
 use super::methods::multiplication::multiply;
 use super::methods::pseudoinverse::pseudo_inverse;
 use super::methods::transpose::transpose;
+use core::f64;
+use std::fmt::{Display, Formatter};
+use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Debug, Clone)]
-pub struct Matrix {
+pub struct Matrix<T>
+where
+    T: Clone
+        + Display
+        + Add<Output = T>
+        + Sub<Output = T>
+        + Mul<Output = T>
+        + Div<Output = T>
+        + Default
+        + PartialEq,
+{
     size_x: usize,
     size_y: usize,
-    data: Vec<Vec<f64>>,
+    data: Vec<Vec<T>>,
 }
 
-impl Matrix {
+impl<T> Matrix<T>
+where
+    T: Clone
+        + Display
+        + Add<Output = T>
+        + Sub<Output = T>
+        + Mul<Output = T>
+        + Div<Output = T>
+        + Default
+        + PartialEq,
+{
     // Constructor
     pub fn new(size_x: usize, size_y: usize) -> Self {
         Matrix {
             size_x,
             size_y,
-            data: vec![vec![0.0; size_y]; size_x], // size_x filas, size_y columnas
+            data: vec![vec![T::default(); size_y]; size_x], // size_x filas, size_y columnas
+        }
+    }
+
+    fn convert_to_f64_if_needed(&self) -> Matrix<f64>
+    where
+        T: Copy + Into<f64>, // Usa Into<f64> en lugar de From<T>
+    {
+        let new_data = self
+            .data
+            .iter()
+            .map(|row| row.iter().map(|&x| x.into()).collect()) // Usa x.into() en lugar de f64::from(x)
+            .collect();
+
+        Matrix {
+            size_x: self.size_x,
+            size_y: self.size_y,
+            data: new_data,
+        }
+    }
+
+    fn convert_from_f64_if_needed(matrix: Matrix<f64>) -> Matrix<T>
+    where
+        T: From<f64> + Copy,
+    {
+        let new_data = matrix
+            .data
+            .into_iter()
+            .map(|row| row.into_iter().map(T::from).collect())
+            .collect();
+
+        Matrix {
+            size_x: matrix.size_x,
+            size_y: matrix.size_y,
+            data: new_data,
+        }
+    }
+    // pasar a f64
+    pub fn to_f64(&self) -> Matrix<f64>
+    where
+        T: Copy,
+        f64: From<T>,
+    {
+        let new_data = self
+            .data
+            .iter()
+            .map(|row| row.iter().map(|&x| f64::from(x)).collect())
+            .collect();
+
+        Matrix {
+            size_x: self.size_x,
+            size_y: self.size_y,
+            data: new_data,
         }
     }
 
     // set vector like a row
-    pub fn set_row(&mut self, row: usize, values: Vec<f64>) -> Result<(), &'static str> {
+    pub fn set_row(&mut self, row: usize, values: Vec<T>) -> Result<(), &'static str> {
         if row >= self.size_x {
             return Err("Out of range");
         }
@@ -35,16 +112,16 @@ impl Matrix {
     }
 
     // Get specific value donde x es fila, y es columna
-    pub fn get(&self, x: usize, y: usize) -> Option<f64> {
+    pub fn get(&self, x: usize, y: usize) -> Option<T> {
         if x < self.size_x && y < self.size_y {
-            Some(self.data[x][y]) // x accede a la fila, y a la columna
+            Some(self.data[x][y].clone()) // x accede a la fila, y a la columna
         } else {
             None
         }
     }
 
     // set in a specific value donde x es fila, y es columna
-    pub fn set(&mut self, x: usize, y: usize, value: f64) -> Result<(), &'static str> {
+    pub fn set(&mut self, x: usize, y: usize, value: T) -> Result<(), &'static str> {
         if x < self.size_x && y < self.size_y {
             self.data[x][y] = value; // x accede a la fila, y a la columna
             Ok(())
@@ -54,14 +131,42 @@ impl Matrix {
     }
 
     // Obtain a determinant of matrix
-    pub fn determinant(&self) -> f64 {
-        let det: f64 = determinant(&self.data); // Esto está bien porque self.data ya es Vec<Vec<f64>>
-        det
+    pub fn determinant(&self) -> T
+    where
+        T: Num + Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Float + 'static,
+    {
+        if std::any::TypeId::of::<T>() == std::any::TypeId::of::<i32>() {
+            let matrix_f64 = self.convert_to_f64_if_needed();
+            let det_f64 = determinant(&matrix_f64.data);
+            // Convertimos el resultado de vuelta al tipo T
+            T::from(det_f64).unwrap_or(T::zero())
+        } else {
+            determinant(&self.data)
+        }
     }
 
     // Obtain a traspose of matrix
-    pub fn transpose(&self) -> Matrix {
-        let trans_data = transpose(&self.data);
+    pub fn transpose(&self) -> Matrix<T>
+    where
+        T: Num
+            + Copy
+            + Add<Output = T>
+            + Sub<Output = T>
+            + Mul<Output = T>
+            + Float
+            + Default
+            + Clone
+            + Into<f64>
+            + From<f64>,
+    {
+        let trans_data: Vec<Vec<T>> = transpose(&self.data);
+        if trans_data.is_empty() {
+            return Matrix {
+                size_x: 0,
+                size_y: 0,
+                data: vec![], // Retorna una matriz vacía si la entrada no es válida
+            };
+        }
         Matrix {
             size_x: self.size_y,
             size_y: self.size_x,
@@ -70,7 +175,10 @@ impl Matrix {
     }
 
     // Obtain adjugate of matrix
-    pub fn adjugte(&self) -> Matrix {
+    pub fn adjugte(&self) -> Matrix<T>
+    where
+        T: Num + Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Float + Default,
+    {
         let adju_data = adjugate(&self.data);
         Matrix {
             size_x: self.size_y,
@@ -79,8 +187,11 @@ impl Matrix {
         }
     }
     // Obtain adjugate of matrix
-    pub fn inverse(&self) -> Matrix {
-        let inverse_data: Vec<Vec<f64>>;
+    pub fn inverse(&self) -> Matrix<T>
+    where
+        T: Num + Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Float + Default,
+    {
+        let inverse_data: Vec<Vec<T>>;
         if self.is_square() {
             // Si la matriz es cuadrada, simplemente devolvemos su inversa
             inverse_data = inverse(&self.data);
@@ -100,7 +211,10 @@ impl Matrix {
         }
     }
     // multiplication of matrix
-    pub fn multiplication(&self, data: Matrix) -> Matrix {
+    pub fn multiplication(&self, data: Matrix<T>) -> Matrix<T>
+    where
+        T: Num + Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Float + Default,
+    {
         let multi = multiply(&self.data, &data.data);
         let len = multi.len();
         Matrix {
@@ -118,18 +232,29 @@ impl Matrix {
     }
 }
 
-// Implementación para poder imprimir la matriz
-impl std::fmt::Display for Matrix {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        for x in 0..self.size_x {
-            // Iteramos primero por filas
+/// Implementación de `Display` para imprimir la matriz
+impl<T> Display for Matrix<T>
+where
+    T: Clone
+        + Num
+        + Display
+        + Add<Output = T>
+        + Sub<Output = T>
+        + Mul<Output = T>
+        + Div<Output = T>
+        + Default
+        + PartialEq
+        + Zero
+        + One,
+{
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        for row in &self.data {
             write!(f, "[")?;
-            for y in 0..self.size_y {
-                // Luego por columnas
-                if y > 0 {
+            for (i, value) in row.iter().enumerate() {
+                if i > 0 {
                     write!(f, ", ")?;
                 }
-                write!(f, "{:>8.2}", self.get(x, y).unwrap())?;
+                write!(f, "{}", value)?;
             }
             writeln!(f, "]")?;
         }
@@ -138,8 +263,18 @@ impl std::fmt::Display for Matrix {
 }
 
 // Implementation indexation to use matrix[i][j]
-impl std::ops::Index<usize> for Matrix {
-    type Output = Vec<f64>;
+impl<T> std::ops::Index<usize> for Matrix<T>
+where
+    T: Clone
+        + Display
+        + Add<Output = T>
+        + Sub<Output = T>
+        + Mul<Output = T>
+        + Div<Output = T>
+        + Default
+        + PartialEq,
+{
+    type Output = Vec<T>;
 
     fn index(&self, index: usize) -> &Self::Output {
         &self.data[index]
@@ -147,7 +282,17 @@ impl std::ops::Index<usize> for Matrix {
 }
 
 // Implementation indexation to reemplace in Matric[i][j] = value
-impl std::ops::IndexMut<usize> for Matrix {
+impl<T> std::ops::IndexMut<usize> for Matrix<T>
+where
+    T: Clone
+        + Display
+        + Add<Output = T>
+        + Sub<Output = T>
+        + Mul<Output = T>
+        + Div<Output = T>
+        + Default
+        + PartialEq,
+{
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         &mut self.data[index]
     }

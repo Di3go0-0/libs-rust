@@ -1,5 +1,6 @@
 use super::{inverse::inverse, multiplication::multiply, transpose::transpose};
-
+use num_traits::{Float, Num, One, Zero};
+use std::ops::{Add, Div, Mul, Sub};
 /// Calcula la matriz pseudo-inversa de Moore-Penrose
 ///
 /// # Arguments
@@ -7,7 +8,19 @@ use super::{inverse::inverse, multiplication::multiply, transpose::transpose};
 ///
 /// # Returns
 /// * `Vec<Vec<f64>>` - La matriz pseudo-inversa
-pub fn pseudo_inverse(matrix: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+pub fn pseudo_inverse<T>(matrix: &Vec<Vec<T>>) -> Vec<Vec<T>>
+where
+    T: Num
+        + Copy
+        + Zero
+        + One
+        + Add<Output = T>
+        + Sub<Output = T>
+        + Mul<Output = T>
+        + Div<Output = T>
+        + Float
+        + Default,
+{
     let rows = matrix.len();
     let cols = if rows > 0 { matrix[0].len() } else { 0 };
 
