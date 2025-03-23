@@ -1,3 +1,5 @@
+use core::f64;
+
 use methods::{
     adjugate::adjugate, determinant::determinant, inverse::inverse, multiplication::multiply,
     pseudoinverse::pseudo_inverse, transpose::transpose,
@@ -115,6 +117,57 @@ impl Matrix {
             return true;
         }
         false
+    }
+
+    /// Creates a new Matrix with random values between 0.0 and 1.0 (inclusive)
+    ///
+    /// # Examples
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat = Matrix::random(2, 3);
+    /// assert_eq!(mat.size_x, 2);
+    /// assert_eq!(mat.size_y, 3);
+    /// ```
+    pub fn random(size_x: usize, size_y: usize) -> Matrix {
+        Self::random_range(size_x, size_y, 0.0, 1.0)
+    }
+
+    /// Creates a new Matrix with random values between min and max (inclusive)
+    ///
+    /// # Arguments
+    /// * `size_x` - Number of rows
+    /// * `size_y` - Number of columns
+    /// * `min` - Minimum value (inclusive)
+    /// * `max` - Maximum value (inclusive)
+    ///
+    /// # Examples
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat = Matrix::random_range(2, 2, -1.0, 1.0);
+    ///
+    /// // Verificar que todos los valores estén en el rango
+    /// for i in 0..2 {
+    ///     for j in 0..2 {
+    ///         let val = mat.get(i, j).unwrap();
+    ///         assert!(val >= -1.0 && val <= 1.0);
+    ///     }
+    /// }
+    /// ```
+    pub fn random_range(size_x: usize, size_y: usize, min: f64, max: f64) -> Matrix {
+        use rand::Rng;
+        let mut rng = rand::thread_rng();
+
+        let data: Vec<Vec<f64>> = (0..size_x)
+            .map(|_| (0..size_y).map(|_| rng.gen_range(min..=max)).collect())
+            .collect();
+
+        Matrix {
+            size_x,
+            size_y,
+            data,
+        }
     }
 }
 

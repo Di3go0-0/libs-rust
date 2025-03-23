@@ -8,3 +8,4 @@ name = "matrix"
 path = "src/lib.rs"
 
 [dependencies]
+rand = "0.9.0"
