@@ -1,9 +1,9 @@
-use super::methods::adjugate::adjugate;
-use super::methods::determinant::determinant;
-use super::methods::inverse::inverse;
-use super::methods::multiplication::multiply;
-use super::methods::pseudoinverse::pseudo_inverse;
-use super::methods::transpose::transpose;
+use methods::{
+    adjugate::adjugate, determinant::determinant, inverse::inverse, multiplication::multiply,
+    pseudoinverse::pseudo_inverse, transpose::transpose,
+};
+
+pub mod methods;
 
 #[derive(Debug, Clone)]
 pub struct Matrix {
