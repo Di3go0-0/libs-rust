@@ -8,7 +8,6 @@ pub fn SIGMOID(x: &f64) -> f64 {
     return (1.0 / (1.0 + e_x));
 }
 
-pub fn SIGMOID_DERIVATIVE(x: &f64) -> f64 {
-    let sigmoid_x = SIGMOID(x);
-    sigmoid_x * (1.0 - sigmoid_x)
+pub fn SIGMOID_DERIVATIVE(output: &f64) -> f64 {
+    output * (1.0 - output) // Se asume que la entrada ya es la salida del sigmoide
 }
