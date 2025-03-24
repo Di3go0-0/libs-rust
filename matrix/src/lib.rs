@@ -1,18 +1,18 @@
 use core::f64;
 
 use methods::{
-    add::add, adjugate::adjugate, determinant::determinant, inverse::inverse,
-    multiplication::multiply, pseudoinverse::pseudo_inverse, subtract::subtract,
-    transpose::transpose,
+    add::add, adjugate::adjugate, determinant::determinant,
+    elementwise_multiply::elementwise_multiply, inverse::inverse, multiplication::multiply,
+    pseudoinverse::pseudo_inverse, subtract::subtract, transpose::transpose,
 };
 
 pub mod methods;
 
 #[derive(Debug, Clone)]
 pub struct Matrix {
-    size_x: usize,
-    size_y: usize,
-    data: Vec<Vec<f64>>,
+    pub size_x: usize,
+    pub size_y: usize,
+    pub data: Vec<Vec<f64>>,
 }
 
 impl Matrix {
@@ -22,6 +22,17 @@ impl Matrix {
             size_x,
             size_y,
             data: vec![vec![0.0; size_y]; size_x], // size_x filas, size_y columnas
+        }
+    }
+    pub fn from(vec: Vec<f64>) -> Self {
+        let size_x = vec.len();
+        let size_y = 1; // Matriz de una sola columna
+        let data = vec.into_iter().map(|v| vec![v]).collect(); // Convertimos cada elemento en una fila
+
+        Matrix {
+            size_x,
+            size_y,
+            data,
         }
     }
     pub fn new2(data: Vec<Vec<f64>>) -> Self {
@@ -118,7 +129,7 @@ impl Matrix {
         }
     }
     // multiplication of matrix
-    pub fn multiplication(&self, data: Matrix) -> Matrix {
+    pub fn multiplication(&self, data: &Matrix) -> Matrix {
         let multi = multiply(&self.data, &data.data);
         let len = multi.len();
         Matrix {
@@ -185,6 +196,13 @@ impl Matrix {
             data,
         }
     }
+    pub fn elementwise_multiply(&self, other: &Matrix) -> Result<Matrix, &'static str> {
+        if self.size_x != other.size_x || self.size_y != other.size_y {
+            return Err("Las dimensiones de las matrices no coinciden.");
+        }
+
+        Ok(elementwise_multiply(self, other))
+    }
     pub fn add(&self, other: &Matrix) -> Result<Matrix, &'static str> {
         if self.size_x != other.size_x || self.size_y != other.size_y {
             return Err("Las dimensiones de las matrices no coinciden.");
@@ -218,6 +236,23 @@ impl Matrix {
         let result = subtract(self, other);
         self.data = result.data;
         Ok(())
+    }
+
+    pub fn apply<F>(&self, func: F) -> Matrix
+    where
+        F: Fn(&f64) -> f64,
+    {
+        let new_data: Vec<Vec<f64>> = self
+            .data
+            .iter()
+            .map(|row| row.iter().map(|x| func(x)).collect())
+            .collect();
+
+        Matrix {
+            size_x: self.size_x,
+            size_y: self.size_y,
+            data: new_data,
+        }
     }
 }
 
