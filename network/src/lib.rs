@@ -1,5 +1,8 @@
 mod activation;
-pub use activation::{Activation, SIGMOID, SIGMOID_DERIVATIVE};
+pub use activation::{
+    Activation, ELU, ELU_DERIVATIVE, LEAKY_RELU, LEAKY_RELU_DERIVATIVE, RELU, RELU_DERIVATIVE,
+    SIGMOID, SIGMOID_DERIVATIVE, SWISH, SWISH_DERIVATIVE, TANH, TANH_DERIVATIVE,
+};
 
 // use activation::Activation;
 use matrix::Matrix;
@@ -22,8 +25,11 @@ impl Network {
         let mut biases = vec![];
 
         for i in 0..layers.len() - 1 {
-            weights.push(Matrix::random(layers[i + 1], layers[i]));
-            biases.push(Matrix::random(layers[i + 1], 1));
+            let fan_in = layers[i]; // Número de neuronas en la capa anterior
+            let std_dev = (1.0 / fan_in as f64).sqrt();
+
+            weights.push(Matrix::random(layers[i + 1], layers[i]).apply(|x| x * std_dev));
+            biases.push(Matrix::random(layers[i + 1], 1).apply(|x| x * std_dev));
         }
 
         Network {
@@ -82,10 +88,10 @@ impl Network {
         }
     }
 
-    pub fn train(&mut self, inputs: Vec<Vec<f64>>, targets: Vec<Vec<f64>>, epochs: u32) {
+    pub fn train(&mut self, inputs: &Vec<Vec<f64>>, targets: &Vec<Vec<f64>>, epochs: u32) {
         for i in 1..=epochs {
             if epochs < 100 || i % (epochs / 100) == 0 {
-                println!("Epoch {} of {}", i, epochs);
+                // println!("Epoch {} of {}", i, epochs);
             }
             for j in 0..inputs.len() {
                 let output = self.feed_forward(Matrix::from(inputs[j].clone()));
