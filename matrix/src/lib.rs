@@ -1,8 +1,9 @@
 use core::f64;
 
 use methods::{
-    adjugate::adjugate, determinant::determinant, inverse::inverse, multiplication::multiply,
-    pseudoinverse::pseudo_inverse, transpose::transpose,
+    add::add, adjugate::adjugate, determinant::determinant, inverse::inverse,
+    multiplication::multiply, pseudoinverse::pseudo_inverse, subtract::subtract,
+    transpose::transpose,
 };
 
 pub mod methods;
@@ -21,6 +22,21 @@ impl Matrix {
             size_x,
             size_y,
             data: vec![vec![0.0; size_y]; size_x], // size_x filas, size_y columnas
+        }
+    }
+    pub fn new2(data: Vec<Vec<f64>>) -> Self {
+        let size_x = data.len();
+        let size_y = data.first().map_or(0, |row| row.len());
+
+        // Verificación de que todas las filas tengan la misma cantidad de columnas
+        if data.iter().any(|row| row.len() != size_y) {
+            panic!("Inconsistent number of elements in the matrix rows");
+        }
+
+        Matrix {
+            size_x,
+            size_y,
+            data,
         }
     }
 
@@ -168,6 +184,40 @@ impl Matrix {
             size_y,
             data,
         }
+    }
+    pub fn add(&self, other: &Matrix) -> Result<Matrix, &'static str> {
+        if self.size_x != other.size_x || self.size_y != other.size_y {
+            return Err("Las dimensiones de las matrices no coinciden.");
+        }
+
+        Ok(add(self, other))
+    }
+
+    pub fn add_mut(&mut self, other: &Matrix) -> Result<(), &'static str> {
+        if self.size_x != other.size_x || self.size_y != other.size_y {
+            return Err("Las dimensiones de las matrices no coinciden.");
+        }
+        let result = add(self, other);
+
+        self.data = result.data;
+
+        Ok(())
+    }
+
+    pub fn subtract(&self, other: &Matrix) -> Result<Matrix, &'static str> {
+        if self.size_x != other.size_x || self.size_y != other.size_y {
+            return Err("Las dimensiones de las matrices no coinciden.");
+        }
+        Ok(subtract(self, other))
+    }
+
+    pub fn subtract_mut(&mut self, other: &Matrix) -> Result<(), &'static str> {
+        if self.size_x != other.size_x || self.size_y != other.size_y {
+            return Err("Las dimensiones de las matrices no coinciden.");
+        }
+        let result = subtract(self, other);
+        self.data = result.data;
+        Ok(())
     }
 }
 
