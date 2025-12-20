@@ -8,4 +8,4 @@ name = "network"
 path = "src/lib.rs"
 
 [dependencies]
-matrix = {path = "../matrix/"}
+matrix = {path = "../data-structures/matrix/"}
