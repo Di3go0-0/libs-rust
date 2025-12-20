@@ -1,4 +1,3 @@
-
 pub struct MergeSort {
     pub data: Vec<i32>,
 }
@@ -9,47 +8,42 @@ impl MergeSort {
     }
 
     pub fn sort(&mut self) {
-        if self.data.len() <= 1 {
-            return;
-        }
-
-        let mid = self.data.len() / 2;
-
-        let mut left = self.data[..mid].to_vec();
-        let mut right = self.data[mid..].to_vec();
-
-        Self::sort(&mut left);
-        Self::sort(&mut right);
-
-        Self::merge(self.data, &left, &right);
+        let sorted = Self::merge_sort(self.data.clone());
+        self.data = sorted;
     }
 
-    pub fn merge(result: &mut self.data, left: &Vec<i32>, right: &Vec<i32>) {
-        let mut i = 0,
-        let mut j = 0,
-        let mut k = 0,
+    fn merge_sort(data: Vec<i32>) -> Vec<i32> {
+        if data.len() <= 1 {
+            return data;
+        }
+
+        let mid = data.len() / 2;
+
+        let left = Self::merge_sort(data[..mid].to_vec());
+        let right = Self::merge_sort(data[mid..].to_vec());
+
+        Self::merge(left, right)
+    }
+
+    fn merge(left: Vec<i32>, right: Vec<i32>) -> Vec<i32> {
+        let mut result = Vec::with_capacity(left.len() + right.len());
+
+        let mut i = 0;
+        let mut j = 0;
 
         while i < left.len() && j < right.len() {
-            if left[i] <= right[j]{
-                result[k] = left[i];
+            if left[i] <= right[j] {
+                result.push(left[i]);
                 i += 1;
             } else {
-                result[k] = right[j];
+                result.push(right[j]);
                 j += 1;
             }
-            k += 1;
         }
 
-        while i < left.len() {
-            result[k] = left[i];
-            i += 1;
-            k += 1;
-        }
-        while j < right.len() {
-            result[k] = right[j];
-            j += 1;
-            k += 1;
-        }
+        result.extend_from_slice(&left[i..]);
+        result.extend_from_slice(&right[j..]);
+
+        result
     }
 }
-
