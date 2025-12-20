@@ -12,7 +12,7 @@ fn main() {
 }
 
 fn linearSearch(vec: &[i32]) {
-    let searcher = LinealSearch::new(vec);
+    let searcher = LinealSearch::new(vec.to_vec());
 
     match searcher.search(30) {
         Some(index) => println!("Element find in the position {}", index),
@@ -21,7 +21,7 @@ fn linearSearch(vec: &[i32]) {
 }
 
 fn binarySearch(vec: &[i32]) {
-    let bs = BinarySearch::new(vec);
+    let bs = BinarySearch::new(vec.to_vec());
 
     match bs.search(7) {
         Some(index) => println!("Element find in the position {}", index),
@@ -30,7 +30,7 @@ fn binarySearch(vec: &[i32]) {
 }
 
 fn insertionSort(vec: &[i32]) {
-    let mut sort = InsertionSort::new(vec);
+    let mut sort = InsertionSort::new(vec.to_vec());
 
     sort.sort();
 
@@ -38,7 +38,7 @@ fn insertionSort(vec: &[i32]) {
 }
 
 fn bubbleSort(vec: &[i32]) {
-    let mut bubble = BubbleSort::new(vec);
+    let mut bubble = BubbleSort::new(vec.to_vec());
 
     bubble.sort();
 
@@ -46,7 +46,7 @@ fn bubbleSort(vec: &[i32]) {
 }
 
 fn mergeSort(vec: &[i32]) {
-    let mut sort = MergeSort::new(vec);
+    let mut sort = MergeSort::new(vec.to_vec());
 
     sort.sort();
 
