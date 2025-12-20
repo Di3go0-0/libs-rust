@@ -1,0 +1,26 @@
+# --- Binarios y Compilación ---
+# Contiene todos los artefactos de compilación (ejecutables, librerías, dependencias)
+/target/
+
+# --- Archivos de Bloqueo (Lockfiles) ---
+# Si estás creando una LIBRERÍA, se recomienda ignorar el Cargo.lock.
+# Si estás creando un EJECUTABLE (binario), NO lo ignores (comenta la línea de abajo).
+# Cargo.lock
+
+# --- Herramientas y Entornos ---
+# Archivos generados por 'cargo clippy' o 'cargo check'
+**/*.rs.bk
+
+# Archivos de depuración de macOS
+.DS_Store
+
+# --- IDEs y Editores ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Variables de Entorno ---
+# Nunca subas tus secretos o llaves de API
+.env
+.env.local
