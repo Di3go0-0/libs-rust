@@ -3,12 +3,16 @@ use bubble_sort::BubbleSort;
 use insertion_sort::InsertionSort;
 use linear_search::LinealSearch;
 use merge_sort::MergeSort;
+use quick_sort::QuickSort;
 
 fn main() {
     let base = vec![5, 2, 4, 6, 1, 3];
     println!("Base: {:?}", base);
 
-    mergeSort(&base);
+    // insertionSort(&base);
+    // bubbleSort(&base);
+    // mergeSort(&base);
+    quick_sort(&base)
 }
 
 fn linearSearch(vec: &[i32]) {
@@ -53,6 +57,13 @@ fn mergeSort(vec: &[i32]) {
     println!("{:?}", sort.data);
 }
 
+fn quick_sort(vec: &[i32]) {
+    let mut sort = QuickSort::new(vec.to_vec());
+
+    sort.sort();
+
+    println!("{:?}", sort.data);
+}
 // use vector::MyVec;
 // fn main() {
 //     let mut v = MyVec::new();

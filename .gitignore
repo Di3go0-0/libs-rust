@@ -1,6 +1,6 @@
 # --- Binarios y Compilación ---
 # Contiene todos los artefactos de compilación (ejecutables, librerías, dependencias)
-/target/
+target/
 
 # --- Archivos de Bloqueo (Lockfiles) ---
 # Si estás creando una LIBRERÍA, se recomienda ignorar el Cargo.lock.

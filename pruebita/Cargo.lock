@@ -31,4 +31,9 @@ dependencies = [
  "insertion_sort",
  "linear_search",
  "merge_sort",
+ "quick_sort",
 ]
+
+[[package]]
+name = "quick_sort"
+version = "0.1.0"
