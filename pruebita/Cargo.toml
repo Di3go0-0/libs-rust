@@ -12,3 +12,4 @@ bubble_sort = {path = "../algorithms/bubble_sort/"}
 insertion_sort = {path = "../algorithms/insertion_sort/"}
 merge_sort = {path = "../algorithms/merge_sort/"}
 quick_sort = {path = "../algorithms/quick_sort/"}
+graph = {path = "../algorithms/graph/"}

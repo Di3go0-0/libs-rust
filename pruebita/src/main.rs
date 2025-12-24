@@ -1,11 +1,17 @@
 use binary_search::BinarySearch;
 use bubble_sort::BubbleSort;
+use graph::Graph;
 use insertion_sort::InsertionSort;
 use linear_search::LinealSearch;
 use merge_sort::MergeSort;
 use quick_sort::QuickSort;
 
 fn main() {
+    // with_vectors();
+    graph();
+}
+
+fn with_vectors() {
     let base = vec![5, 2, 4, 6, 1, 3];
     println!("Base: {:?}", base);
 
@@ -64,6 +70,21 @@ fn quick_sort(vec: &[i32]) {
 
     println!("{:?}", sort.data);
 }
+
+fn graph() {
+    let mut graph = Graph::new(4);
+
+    graph.add_edge(0, 1);
+    graph.add_edge(0, 2);
+    graph.add_edge(1, 3);
+
+    println!("DFS:");
+    graph.dfs(0);
+
+    println!("\nBFS:");
+    graph.bfs(0);
+}
+
 // use vector::MyVec;
 // fn main() {
 //     let mut v = MyVec::new();
